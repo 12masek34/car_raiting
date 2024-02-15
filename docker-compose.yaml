@@ -23,6 +23,9 @@ services:
       - .env
     volumes:
       - postgresql_volume:/var/lib/pgsql
+    ports:
+      - "5432:5432"
+
 
 volumes:
   postgresql_volume:
