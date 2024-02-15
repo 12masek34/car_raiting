@@ -6,14 +6,15 @@ services:
       context: .
     restart: on-failure
     stop_signal: SIGINT
+    command: python main.py
     depends_on:
-      - postgres
+      - db
     env_file:
       - .env
     volumes:
       - ./.:/app
 
-  postgres:
+  db:
     image: postgres:12-alpine
     restart: on-failure
     volumes:
@@ -24,4 +25,4 @@ services:
       - postgresql_volume:/var/lib/pgsql
 
 volumes:
-  postgres-data:
+  postgresql_volume:
