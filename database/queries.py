@@ -9,3 +9,12 @@ create_cars = """
         photo_ids INTEGER[]
     );
 """
+
+insert_car = """
+    INSERT INTO cars (user_id) values ($1)
+"""
+
+insert_restriction = """
+UPDATE cars SET restriction = $2
+WHERE id = (SELECT id FROM cars WHERE user_id = $1 ORDER BY id DESC LIMIT 1)
+"""
