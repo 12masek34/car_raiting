@@ -1,21 +1,47 @@
 from aiogram import (
-    F,
+    Bot,
     Router,
     types,
 )
 from aiogram.filters import (
     Command,
 )
+from aiogram.fsm.context import (
+    FSMContext,
+)
 
 from database.connection import (
     Db,
 )
+from states import CarState
 
 router = Router()
+# bot.send_document(config.GROUP_ID, document_id)
 
 
-@router.message(F.text.lower().in_({"передний", "задний", "полный"}))
-async def answer_drive_type(message: types.Message, db: Db):
+@router.message(Command("start"))
+async def cmd_start(message: types.Message, state: FSMContext, db: Db):
+    user_id = message.from_user.id
+    await db.add_car(user_id)
+    button_yes = types.KeyboardButton(text="да")
+    button_no = types.KeyboardButton(text="нет")
+    keyboard = types.ReplyKeyboardMarkup(keyboard=[[button_yes, button_no]], resize_keyboard=True)
+    await message.answer("Есть ли текущий залог или ограничение на авто?", reply_markup=keyboard)
+    await state.set_state(CarState.restriction)
+
+
+@router.message(CarState.document_photo)
+async def document(message: types.Message, state: FSMContext, db: Db):
+    document_id = getattr(message.document, "file_id", None)
+    photo_id = getattr(message.photo, "file_id", None)
+    user_id = message.from_user.id
+    await db.add_document(user_id, document_id, photo_id)
+    await message.answer("aaaaaaaaaaaaaaaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+    await state.set_state(CarState.car_photo_1)
+
+
+@router.message(CarState.driver_type)
+async def drive_type(message: types.Message, state: FSMContext, db: Db):
     user_id = message.from_user.id
     drive_type = message.text
     await db.add_drive_type(user_id, drive_type)
@@ -23,10 +49,11 @@ async def answer_drive_type(message: types.Message, db: Db):
         "Сделать Фото СТС или ПТС с читаемыми данными. Без бликов и размытости.",
         reply_markup=types.ReplyKeyboardRemove(),
     )
+    await state.set_state(CarState.document_photo)
 
 
-@router.message(F.text.lower().in_({"отсутствует", "зимняя", "летняя", "грязевая"}))
-async def answer_tires(message: types.Message, db: Db):
+@router.message(CarState.tires)
+async def tires(message: types.Message, state: FSMContext, db: Db):
     user_id = message.from_user.id
     tire = message.text
     await db.add_tire(user_id, tire)
@@ -39,10 +66,11 @@ async def answer_tires(message: types.Message, db: Db):
         button_drive_type_full,
     ]], resize_keyboard=True)
     await message.answer("Какой привод на авто?", reply_markup=keyboard)
+    await state.set_state(CarState.driver_type)
 
 
-@router.message(F.text.in_({"1", "2", "3", "4"}))
-async def answer_keys(message: types.Message, db: Db):
+@router.message(CarState.keys)
+async def keys(message: types.Message, state: FSMContext, db: Db):
     user_id = message.from_user.id
     number_of_keys = int(message.text) if message.text.isdigit() else None
     await db.add_number_of_keys(user_id, number_of_keys)
@@ -57,10 +85,11 @@ async def answer_keys(message: types.Message, db: Db):
         button_tire_mud,
     ]], resize_keyboard=True)
     await message.answer("Есть ли доп. комплект резины?", reply_markup=keyboard)
+    await state.set_state(CarState.tires)
 
 
-@router.message(F.text.lower().in_({"да", "нет"}))
-async def answer_restriction(message: types.Message, db: Db):
+@router.message(CarState.restriction)
+async def restriction(message: types.Message, state: FSMContext, db: Db):
     user_id = message.from_user.id
     restricion = True if message.text.lower() == "да" else False
     await db.add_restriction(user_id, restricion)
@@ -70,13 +99,4 @@ async def answer_restriction(message: types.Message, db: Db):
     button_4 = types.KeyboardButton(text="4")
     keyboard = types.ReplyKeyboardMarkup(keyboard=[[button_1, button_2, button_3, button_4]], resize_keyboard=True)
     await message.answer("Сколько ключей?", reply_markup=keyboard)
-
-
-@router.message(Command("start"))
-async def cmd_start(message: types.Message, db: Db):
-    user_id = message.from_user.id
-    await db.add_car(user_id)
-    button_yes = types.KeyboardButton(text="да")
-    button_no = types.KeyboardButton(text="нет")
-    keyboard = types.ReplyKeyboardMarkup(keyboard=[[button_yes, button_no]], resize_keyboard=True)
-    await message.answer("Есть ли текущий залог или ограничение на авто?", reply_markup=keyboard)
+    await state.set_state(CarState.keys)

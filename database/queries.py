@@ -6,7 +6,8 @@ create_cars = """
         number_of_keys INTEGER,
         tire VARCHAR(255),
         drive_type VARCHAR(255),
-        photo_ids INTEGER[]
+        photo_ids TEXT[],
+        document_ids TEXT[]
     );
 """
 
@@ -30,5 +31,12 @@ insert_tire = """
 
 insert_drive_type = """
     UPDATE cars SET drive_type = $2
+    WHERE id = (SELECT id FROM cars WHERE user_id = $1 ORDER BY id DESC LIMIT 1)
+"""
+
+insert_document = """
+    UPDATE cars
+    SET document_ids = array_append(document_ids, $2),
+    photo_ids = array_append(photo_ids, $3)
     WHERE id = (SELECT id FROM cars WHERE user_id = $1 ORDER BY id DESC LIMIT 1)
 """

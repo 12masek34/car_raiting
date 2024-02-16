@@ -1,5 +1,6 @@
 import asyncpg
 import config
+from database import queries
 
 
 class Db:
@@ -20,15 +21,6 @@ async def init_db():
     await db.init_pool()
     async with db.pool.acquire() as con:
         async with con.transaction():
-            await con.execute("""
-                CREATE TABLE IF NOT EXISTS cars (
-                    id SERIAL PRIMARY KEY,
-                    user_id INTEGER,
-                    restriction BOOLEAN default null,
-                    number_of_keys INTEGER,
-                    tire VARCHAR(255),
-                    drive_type VARCHAR(255),
-                    photo_ids INTEGER[]
-                );
-            """)
+            await con.execute(queries.create_cars)
+
     return db

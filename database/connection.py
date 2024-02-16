@@ -48,6 +48,12 @@ class Db:
                 await con.execute(queries.insert_drive_type, user_id, drive_type)
         config.log.info(f" добавлен привод user_id={user_id} привод={drive_type}")
 
+    async def add_document(self, user_id: int, document_id: str | None, photo_id: str | None) -> None:
+        async with self.pool.acquire() as con:
+            async with con.transaction():
+                await con.execute(queries.insert_document, user_id, document_id, photo_id)
+        config.log.info(f" добавлен документ user_id={user_id} document_id={document_id} photo_id={photo_id}")
+
 
 async def init_db() -> Db:
     db = Db()
