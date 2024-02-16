@@ -1,7 +1,7 @@
 from aiogram import Router, types, F
 from aiogram.filters import Command
 from config import log
-from database import db
+from database.connection import Db
 
 
 router = Router()
@@ -11,8 +11,9 @@ router = Router()
 async def answer_yes(message: types.Message):
     await message.answer("Это здорово!", reply_markup=types.ReplyKeyboardRemove())
 
+
 @router.message(Command("start"))
-async def cmd_start(message: types.Message):
+async def cmd_start(message: types.Message, db: Db):
     log.info("@@@@@@@@@@@@")
     log.info(db)
     button_yes = types.KeyboardButton(text="да")

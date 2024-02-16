@@ -1,7 +1,6 @@
 import asyncio
 import logging
 
-import asyncpg
 from aiogram import (
     Bot,
     Dispatcher,
@@ -14,17 +13,20 @@ from aiogram.fsm.storage.memory import (
 )
 
 import config
-from database import (
-    Db
+from database.connection import (
+    init_db,
 )
 from handlers import (
     router,
 )
 
+
 dp = Dispatcher(storage=MemoryStorage())
 
 
 async def main():
+    db = await init_db()
+    dp["db"] = db
     bot = Bot(token=config.BOT_TOKEN, parse_mode=ParseMode.HTML)
     dp.include_router(router)
     await bot.delete_webhook(drop_pending_updates=True)
