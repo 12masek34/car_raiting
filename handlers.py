@@ -55,7 +55,7 @@ async def cmd_start(message: types.Message, state: FSMContext, db: Db):
 
 
 @router.message(F.text.lower() == final.lower())
-async def finish(message: types.Message, state: FSMContext, db: Db, bot: Bot):
+async def finish(message: types.Message, db: Db, bot: Bot):
     user_id = message.from_user.id
     user_name = message.from_user.username
     log.info(f" Пользователь user_id={user_id} user_name={user_name} закончил принимать тачку")
