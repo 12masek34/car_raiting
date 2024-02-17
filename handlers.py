@@ -18,6 +18,10 @@ from config import (
     GROUP_ID,
 )
 from constants import (
+    btn_driver_type,
+    btn_keys,
+    btn_tire,
+    btn_yes_no,
     final,
     input_photo_phrase,
 )
@@ -28,6 +32,7 @@ from states import (
     CarState,
 )
 from utils import (
+    get_keyboard,
     get_pictures,
     get_summary,
 )
@@ -41,9 +46,7 @@ router = Router()
 async def cmd_start(message: types.Message, state: FSMContext, db: Db):
     user_id = message.from_user.id
     await db.add_car(user_id)
-    button_yes = types.KeyboardButton(text="Да")
-    button_no = types.KeyboardButton(text="Нет")
-    keyboard = types.ReplyKeyboardMarkup(keyboard=[[button_yes, button_no]], resize_keyboard=True)
+    keyboard = get_keyboard(*btn_yes_no)
     await message.answer("Есть ли текущий залог или ограничение на авто?", reply_markup=keyboard)
     await state.set_state(CarState.restriction)
 
@@ -180,14 +183,7 @@ async def drive_type(message: types.Message, state: FSMContext, db: Db):
     photo_id = getattr(message.photo[-1], "file_id", None) if message.photo else None
 
     if document_id or photo_id:
-        button_drive_type_front = types.KeyboardButton(text="Передний")
-        button_drive_type_rear = types.KeyboardButton(text="Задний")
-        button_drive_type_full = types.KeyboardButton(text="Полный")
-        keyboard = types.ReplyKeyboardMarkup(keyboard=[[
-            button_drive_type_front,
-            button_drive_type_rear,
-            button_drive_type_full,
-        ]], resize_keyboard=True)
+        keyboard = get_keyboard(*btn_driver_type)
         await message.answer("Непонял, какой привод на авто?", reply_markup=keyboard)
         await state.set_state(CarState.driver_type)
         return
@@ -210,16 +206,7 @@ async def tires(message: types.Message, state: FSMContext, db: Db):
     photo_id = getattr(message.photo[-1], "file_id", None) if message.photo else None
 
     if document_id or photo_id:
-        button_tire_disable = types.KeyboardButton(text="Отсутствует")
-        button_tire_winter = types.KeyboardButton(text="Зимняя")
-        button_tire_summer = types.KeyboardButton(text="Летняя")
-        button_tire_mud = types.KeyboardButton(text="Грязевая")
-        keyboard = types.ReplyKeyboardMarkup(keyboard=[[
-            button_tire_disable,
-            button_tire_winter,
-            button_tire_summer,
-            button_tire_mud,
-        ]], resize_keyboard=True)
+        keyboard = get_keyboard(*btn_tire)
         await message.answer("Непонял, есть ли доп. комплект резины?", reply_markup=keyboard)
         await state.set_state(CarState.tires)
         return
@@ -228,14 +215,7 @@ async def tires(message: types.Message, state: FSMContext, db: Db):
     tire = message.text
 
     await db.add_tire(user_id, tire)
-    button_drive_type_front = types.KeyboardButton(text="Передний")
-    button_drive_type_rear = types.KeyboardButton(text="Задний")
-    button_drive_type_full = types.KeyboardButton(text="Полный")
-    keyboard = types.ReplyKeyboardMarkup(keyboard=[[
-        button_drive_type_front,
-        button_drive_type_rear,
-        button_drive_type_full,
-    ]], resize_keyboard=True)
+    keyboard = get_keyboard(*btn_driver_type)
     await message.answer("Какой привод на авто?", reply_markup=keyboard)
     await state.set_state(CarState.driver_type)
 
@@ -246,11 +226,7 @@ async def keys(message: types.Message, state: FSMContext, db: Db):
     photo_id = getattr(message.photo[-1], "file_id", None) if message.photo else None
 
     if document_id or photo_id:
-        button_1 = types.KeyboardButton(text="1")
-        button_2 = types.KeyboardButton(text="2")
-        button_3 = types.KeyboardButton(text="3")
-        button_4 = types.KeyboardButton(text="4")
-        keyboard = types.ReplyKeyboardMarkup(keyboard=[[button_1, button_2, button_3, button_4]], resize_keyboard=True)
+        keyboard = get_keyboard(*btn_keys)
         await message.answer(
             "Непонял, колько ключей?\nВведи число\.",
             reply_markup=keyboard,
@@ -262,11 +238,7 @@ async def keys(message: types.Message, state: FSMContext, db: Db):
     text = message.text or ""
 
     if not text.isdigit():
-        button_1 = types.KeyboardButton(text="1")
-        button_2 = types.KeyboardButton(text="2")
-        button_3 = types.KeyboardButton(text="3")
-        button_4 = types.KeyboardButton(text="4")
-        keyboard = types.ReplyKeyboardMarkup(keyboard=[[button_1, button_2, button_3, button_4]], resize_keyboard=True)
+        keyboard = get_keyboard(*btn_keys)
         await message.answer(
             "Непонял, колько ключей?\nВведи число\.",
             reply_markup=keyboard,
@@ -276,18 +248,9 @@ async def keys(message: types.Message, state: FSMContext, db: Db):
         return
 
     user_id = message.from_user.id
-    number_of_keys = int(message.text) if message.text.isdigit() else None
+    number_of_keys = int(text) if message.text.isdigit() else None
     await db.add_number_of_keys(user_id, number_of_keys)
-    button_tire_disable = types.KeyboardButton(text="Отсутствует")
-    button_tire_winter = types.KeyboardButton(text="Зимняя")
-    button_tire_summer = types.KeyboardButton(text="Летняя")
-    button_tire_mud = types.KeyboardButton(text="Грязевая")
-    keyboard = types.ReplyKeyboardMarkup(keyboard=[[
-        button_tire_disable,
-        button_tire_winter,
-        button_tire_summer,
-        button_tire_mud,
-    ]], resize_keyboard=True)
+    keyboard = get_keyboard(*btn_tire)
     await message.answer("Есть ли доп. комплект резины?", reply_markup=keyboard)
     await state.set_state(CarState.tires)
 
@@ -298,9 +261,7 @@ async def restriction(message: types.Message, state: FSMContext, db: Db):
     photo_id = getattr(message.photo[-1], "file_id", None) if message.photo else None
 
     if document_id or photo_id:
-        button_yes = types.KeyboardButton(text="Да")
-        button_no = types.KeyboardButton(text="Нет")
-        keyboard = types.ReplyKeyboardMarkup(keyboard=[[button_yes, button_no]], resize_keyboard=True)
+        keyboard = get_keyboard(*btn_yes_no)
         await message.answer(
             "Непонял, есть ли текущий залог или ограничение на авто?\nда или нет?",
             reply_markup=keyboard,
@@ -311,10 +272,8 @@ async def restriction(message: types.Message, state: FSMContext, db: Db):
 
     text = message.text.lower()
 
-    if text not in ("да", "нет"):
-        button_yes = types.KeyboardButton(text="Да")
-        button_no = types.KeyboardButton(text="Нет")
-        keyboard = types.ReplyKeyboardMarkup(keyboard=[[button_yes, button_no]], resize_keyboard=True)
+    if text not in [key.lower() for key in btn_yes_no]:
+        keyboard = get_keyboard(*btn_yes_no)
         await message.answer(
             "Непонял, есть ли текущий залог или ограничение на авто?\nда или нет?",
             reply_markup=keyboard,
@@ -326,10 +285,6 @@ async def restriction(message: types.Message, state: FSMContext, db: Db):
     user_id = message.from_user.id
     restricion = True if text == "да" else False
     await db.add_restriction(user_id, restricion)
-    button_1 = types.KeyboardButton(text="1")
-    button_2 = types.KeyboardButton(text="2")
-    button_3 = types.KeyboardButton(text="3")
-    button_4 = types.KeyboardButton(text="4")
-    keyboard = types.ReplyKeyboardMarkup(keyboard=[[button_1, button_2, button_3, button_4]], resize_keyboard=True)
+    keyboard = get_keyboard(*btn_keys)
     await message.answer("Сколько ключей?", reply_markup=keyboard)
     await state.set_state(CarState.keys)

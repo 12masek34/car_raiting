@@ -5,6 +5,8 @@ from aiogram.types import (
     BufferedInputFile,
     InputMediaDocument,
     InputMediaPhoto,
+    KeyboardButton,
+    ReplyKeyboardMarkup,
 )
 from asyncpg import (
     Record,
@@ -13,6 +15,12 @@ from asyncpg import (
 from config import (
     pictures_dir,
 )
+
+
+def get_keyboard(*args) -> ReplyKeyboardMarkup:
+    buttons = [KeyboardButton(text=text) for text in args]
+
+    return ReplyKeyboardMarkup(keyboard=[buttons], resize_keyboard=True)
 
 
 def get_pictures(file_name: str) -> BufferedInputFile:
