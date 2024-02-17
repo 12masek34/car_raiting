@@ -16,6 +16,7 @@ from aiogram.fsm.context import (
 
 from config import (
     GROUP_ID,
+    log,
 )
 from constants import (
     btn_driver_type,
@@ -45,6 +46,8 @@ router = Router()
 @router.message(F.text.lower() == "start")
 async def cmd_start(message: types.Message, state: FSMContext, db: Db):
     user_id = message.from_user.id
+    user_name = message.from_user.username
+    log.info(f" Пользователь user_id={user_id} user_name={user_name} стартует бота")
     await db.add_car(user_id)
     keyboard = get_keyboard(*btn_yes_no)
     await message.answer("Есть ли текущий залог или ограничение на авто?", reply_markup=keyboard)
@@ -54,6 +57,8 @@ async def cmd_start(message: types.Message, state: FSMContext, db: Db):
 @router.message(F.text.lower() == final.lower())
 async def finish(message: types.Message, state: FSMContext, db: Db, bot: Bot):
     user_id = message.from_user.id
+    user_name = message.from_user.username
+    log.info(f" Пользователь user_id={user_id} user_name={user_name} закончил принимать тачку")
     pics, docs = await db.get_documents(user_id)
     summary = await db.get_summary(user_id)
     summary_answer = get_summary(pics, docs, summary)
@@ -70,6 +75,8 @@ async def car_photo_8(message: types.Message, state: FSMContext, db: Db):
     document_id = getattr(message.document, "file_id", None)
     photo_id = getattr(message.photo[-1], "file_id", None) if message.photo else None
     user_id = message.from_user.id
+    user_name = message.from_user.username
+    log.info(f" Пользователь user_id={user_id} user_name={user_name} добавил 8 фото")
     keyboard = get_keyboard(final)
     await db.add_document(user_id, document_id, photo_id)
     await message.answer(
@@ -84,6 +91,8 @@ async def car_photo_7(message: types.Message, state: FSMContext, db: Db):
     document_id = getattr(message.document, "file_id", None)
     photo_id = getattr(message.photo[-1], "file_id", None) if message.photo else None
     user_id = message.from_user.id
+    user_name = message.from_user.username
+    log.info(f" Пользователь user_id={user_id} user_name={user_name} добавил 7 фото")
     photo_rear_seat = get_pictures("rear_seat.jpg")
     await db.add_document(user_id, document_id, photo_id)
     await message.answer_photo(photo_rear_seat)
@@ -96,6 +105,8 @@ async def car_photo_6(message: types.Message, state: FSMContext, db: Db):
     document_id = getattr(message.document, "file_id", None)
     photo_id = getattr(message.photo[-1], "file_id", None) if message.photo else None
     user_id = message.from_user.id
+    user_name = message.from_user.username
+    log.info(f" Пользователь user_id={user_id} user_name={user_name} добавил 6 фото")
     photo_front_seat = get_pictures("front_seat.jpg")
     await db.add_document(user_id, document_id, photo_id)
     await message.answer_photo(photo_front_seat)
@@ -108,6 +119,8 @@ async def car_photo_5(message: types.Message, state: FSMContext, db: Db):
     document_id = getattr(message.document, "file_id", None)
     photo_id = getattr(message.photo[-1], "file_id", None) if message.photo else None
     user_id = message.from_user.id
+    user_name = message.from_user.username
+    log.info(f" Пользователь user_id={user_id} user_name={user_name} добавил 5 фото")
     photo_selector = get_pictures("selector.jpg")
     await db.add_document(user_id, document_id, photo_id)
     await message.answer_photo(photo_selector)
@@ -120,6 +133,8 @@ async def car_photo_4(message: types.Message, state: FSMContext, db: Db):
     document_id = getattr(message.document, "file_id", None)
     photo_id = getattr(message.photo[-1], "file_id", None) if message.photo else None
     user_id = message.from_user.id
+    user_name = message.from_user.username
+    log.info(f" Пользователь user_id={user_id} user_name={user_name} добавил 4 фото")
     photo_panel = get_pictures("panel.jpg")
     await db.add_document(user_id, document_id, photo_id)
     await message.answer_photo(photo_panel)
@@ -132,6 +147,8 @@ async def car_photo_3(message: types.Message, state: FSMContext, db: Db):
     document_id = getattr(message.document, "file_id", None)
     photo_id = getattr(message.photo[-1], "file_id", None) if message.photo else None
     user_id = message.from_user.id
+    user_name = message.from_user.username
+    log.info(f" Пользователь user_id={user_id} user_name={user_name} добавил 3 фото")
     photo_right = get_pictures("right.jpg")
     await db.add_document(user_id, document_id, photo_id)
     await message.answer_photo(photo_right)
@@ -144,6 +161,8 @@ async def car_photo_2(message: types.Message, state: FSMContext, db: Db):
     document_id = getattr(message.document, "file_id", None)
     photo_id = getattr(message.photo[-1], "file_id", None) if message.photo else None
     user_id = message.from_user.id
+    user_name = message.from_user.username
+    log.info(f" Пользователь user_id={user_id} user_name={user_name} добавил 2 фото")
     photo_rear = get_pictures("rear.jpg")
     await db.add_document(user_id, document_id, photo_id)
     await message.answer_photo(photo_rear)
@@ -156,6 +175,8 @@ async def car_photo_1(message: types.Message, state: FSMContext, db: Db):
     document_id = getattr(message.document, "file_id", None)
     photo_id = getattr(message.photo[-1], "file_id", None) if message.photo else None
     user_id = message.from_user.id
+    user_name = message.from_user.username
+    log.info(f" Пользователь user_id={user_id} user_name={user_name} добавил 1 фото")
     photo_front = get_pictures("left.jpg")
     await db.add_document(user_id, document_id, photo_id)
     await message.answer_photo(photo_front)
@@ -168,6 +189,8 @@ async def document(message: types.Message, state: FSMContext, db: Db):
     document_id = getattr(message.document, "file_id", None)
     photo_id = getattr(message.photo[-1], "file_id", None) if message.photo else None
     user_id = message.from_user.id
+    user_name = message.from_user.username
+    log.info(f" Пользователь user_id={user_id} user_name={user_name} добвил фото документов")
     photo_front = get_pictures("front.jpg")
     await db.add_document(user_id, document_id, photo_id)
     await message.answer_photo(photo_front)
@@ -187,6 +210,8 @@ async def drive_type(message: types.Message, state: FSMContext, db: Db):
         return
 
     user_id = message.from_user.id
+    user_name = message.from_user.username
+    log.info(f" Пользователь user_id={user_id} user_name={user_name} добавил тип привода авто")
     drive_type = message.text
     photo_sts = get_pictures("sts.jpg")
     await db.add_drive_type(user_id, drive_type)
@@ -210,7 +235,9 @@ async def tires(message: types.Message, state: FSMContext, db: Db):
         return
 
     user_id = message.from_user.id
+    user_name = message.from_user.username
     tire = message.text
+    log.info(f" Пользователь user_id={user_id} user_name={user_name} добавил шины")
 
     await db.add_tire(user_id, tire)
     keyboard = get_keyboard(*btn_driver_type)
@@ -246,6 +273,8 @@ async def keys(message: types.Message, state: FSMContext, db: Db):
         return
 
     user_id = message.from_user.id
+    user_name = message.from_user.username
+    log.info(f" Пользователь user_id={user_id} user_name={user_name} добавил количество ключей")
     number_of_keys = int(text) if message.text.isdigit() else None
     await db.add_number_of_keys(user_id, number_of_keys)
     keyboard = get_keyboard(*btn_tire)
@@ -281,6 +310,8 @@ async def restriction(message: types.Message, state: FSMContext, db: Db):
         return
 
     user_id = message.from_user.id
+    user_name = message.from_user.username
+    log.info(f" Пользователь user_id={user_id} user_name={user_name} добавил ограничение")
     restricion = True if text == "да" else False
     await db.add_restriction(user_id, restricion)
     keyboard = get_keyboard(*btn_keys)

@@ -12,7 +12,7 @@ create_cars = """
 """
 
 insert_car = """
-    INSERT INTO cars (user_id) values ($1)
+    INSERT INTO cars (user_id) values ($1) RETURNING id
 """
 
 insert_restriction = """

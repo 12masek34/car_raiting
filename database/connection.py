@@ -17,42 +17,43 @@ class Db:
                 host=config.HOST,
                 password=config.PASSWORD,
         )
+        config.log.info(" Есть коннект к базе")
 
     async def add_car(self, user_id: int) -> None:
         async with self.pool.acquire() as con:
             async with con.transaction():
-                await con.execute(queries.insert_car, user_id)
-        config.log.info(f" создана запись user_id={user_id}")
+                id_ = await con.fetchval(queries.insert_car, user_id)
+                config.log.info(f" Создана запись user_id={user_id} id={id_}")
 
     async def add_restriction(self, user_id: int, resriction: bool) -> None:
         async with self.pool.acquire() as con:
             async with con.transaction():
                 await con.execute(queries.insert_restriction, user_id, resriction)
-        config.log.info(f" добавлено ограничение user_id={user_id} ограничение={resriction}")
+        config.log.info(f" Добавлено ограничение user_id={user_id} ограничение={resriction}")
 
     async def add_number_of_keys(self, user_id: int, number_of_keys: int | None) -> None:
         async with self.pool.acquire() as con:
             async with con.transaction():
                 await con.execute(queries.insert_number_of_keys, user_id, number_of_keys)
-        config.log.info(f" добавлено количество user_id={user_id} ключей={number_of_keys}")
+        config.log.info(f" Добавлено количество user_id={user_id} ключей={number_of_keys}")
 
     async def add_tire(self, user_id: int, tire: str | None) -> None:
         async with self.pool.acquire() as con:
             async with con.transaction():
                 await con.execute(queries.insert_tire, user_id, tire)
-        config.log.info(f" добавлена резина user_id={user_id} резина={tire}")
+        config.log.info(f" Добавлена резина user_id={user_id} резина={tire}")
 
     async def add_drive_type(self, user_id: int, drive_type: str | None) -> None:
         async with self.pool.acquire() as con:
             async with con.transaction():
                 await con.execute(queries.insert_drive_type, user_id, drive_type)
-        config.log.info(f" добавлен привод user_id={user_id} привод={drive_type}")
+        config.log.info(f" Добавлен привод user_id={user_id} привод={drive_type}")
 
     async def add_document(self, user_id: int, document_id: str | None, photo_id: str | None) -> None:
         async with self.pool.acquire() as con:
             async with con.transaction():
                 await con.execute(queries.insert_document, user_id, document_id, photo_id)
-        config.log.info(f" добавлен документ user_id={user_id} document_id={document_id} photo_id={photo_id}")
+        config.log.info(f" Добавлен документ user_id={user_id} document_id={document_id} photo_id={photo_id}")
 
     async def get_documents(self, user_id: int) -> tuple[set, set]:
         pics = set()
