@@ -4,6 +4,9 @@ from aiogram import (
     Router,
     types,
 )
+from aiogram.enums.parse_mode import (
+    ParseMode,
+)
 from aiogram.filters import (
     Command,
 )
@@ -28,7 +31,6 @@ from utils import (
     get_pictures,
     get_summary,
 )
-
 
 router = Router()
 
@@ -204,6 +206,23 @@ async def tires(message: types.Message, state: FSMContext, db: Db):
 
 @router.message(CarState.keys)
 async def keys(message: types.Message, state: FSMContext, db: Db):
+    text = message.text or ""
+
+    if not text.isdigit():
+        button_1 = types.KeyboardButton(text="1")
+        button_2 = types.KeyboardButton(text="2")
+        button_3 = types.KeyboardButton(text="3")
+        button_4 = types.KeyboardButton(text="4")
+        keyboard = types.ReplyKeyboardMarkup(keyboard=[[button_1, button_2, button_3, button_4]], resize_keyboard=True)
+        await message.answer(
+            "Непонял, колько ключей?\nВведи число\.",
+            reply_markup=keyboard,
+            parse_mode=ParseMode.MARKDOWN_V2,
+        )
+        await state.set_state(CarState.keys)
+        return
+
+
     user_id = message.from_user.id
     number_of_keys = int(message.text) if message.text.isdigit() else None
     await db.add_number_of_keys(user_id, number_of_keys)
@@ -223,8 +242,22 @@ async def keys(message: types.Message, state: FSMContext, db: Db):
 
 @router.message(CarState.restriction)
 async def restriction(message: types.Message, state: FSMContext, db: Db):
+    text = message.text.lower()
+
+    if text not in ("да", "нет"):
+        button_yes = types.KeyboardButton(text="Да")
+        button_no = types.KeyboardButton(text="Нет")
+        keyboard = types.ReplyKeyboardMarkup(keyboard=[[button_yes, button_no]], resize_keyboard=True)
+        await message.answer(
+            "Непонял, есть ли текущий залог или ограничение на авто?\nда или нет?",
+            reply_markup=keyboard,
+            parse_mode=ParseMode.MARKDOWN_V2,
+        )
+        await state.set_state(CarState.restriction)
+        return
+
     user_id = message.from_user.id
-    restricion = True if message.text.lower() == "да" else False
+    restricion = True if text == "да" else False
     await db.add_restriction(user_id, restricion)
     button_1 = types.KeyboardButton(text="1")
     button_2 = types.KeyboardButton(text="2")
