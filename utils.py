@@ -11,7 +11,6 @@ from asyncpg import (
 )
 
 from config import (
-    log,
     pictures_dir,
 )
 
@@ -24,7 +23,6 @@ def get_pictures(file_name: str) -> BufferedInputFile:
 
 
 def get_summary(pics: set, docs: set, summary: Record) -> list:
-
     restriction = "*есть*" if summary["restriction"] else "нет"
     keys = summary["number_of_keys"]
     tire = summary["tire"]
