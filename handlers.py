@@ -253,7 +253,7 @@ async def keys(message: types.Message, state: FSMContext, db: Db):
     if document_id or photo_id:
         keyboard = get_keyboard(*btn_keys)
         await message.answer(
-            "Непонял, колько ключей?\nВведи число\.",
+            "Непонял, сколько ключей?\nВведи число\.",
             reply_markup=keyboard,
             parse_mode=ParseMode.MARKDOWN_V2,
         )
@@ -265,7 +265,7 @@ async def keys(message: types.Message, state: FSMContext, db: Db):
     if not text.isdigit():
         keyboard = get_keyboard(*btn_keys)
         await message.answer(
-            "Непонял, колько ключей?\nВведи число\.",
+            "Непонял, сколько ключей?\nВведи число\.",
             reply_markup=keyboard,
             parse_mode=ParseMode.MARKDOWN_V2,
         )
