@@ -1,5 +1,6 @@
 from aiogram import (
     Bot,
+    F,
     Router,
     types,
 )
@@ -11,10 +12,10 @@ from aiogram.fsm.context import (
 )
 
 from config import (
-    log,
-    pictures_dir,
+    GROUP_ID,
 )
 from constants import (
+    final,
     input_photo_phrase,
 )
 from database.connection import (
@@ -25,14 +26,15 @@ from states import (
 )
 from utils import (
     get_pictures,
+    get_summary,
 )
 
 
 router = Router()
-# bot.send_document(config.GROUP_ID, document_id)
 
 
 @router.message(Command("start"))
+@router.message(F.text.lower() == "start")
 async def cmd_start(message: types.Message, state: FSMContext, db: Db):
     user_id = message.from_user.id
     await db.add_car(user_id)
@@ -43,12 +45,27 @@ async def cmd_start(message: types.Message, state: FSMContext, db: Db):
     await state.set_state(CarState.restriction)
 
 
+@router.message(F.text.lower() == final.lower())
+async def finish(message: types.Message, state: FSMContext, db: Db, bot: Bot):
+    user_id = message.from_user.id
+    pics, docs = await db.get_documents(user_id)
+    summary = await db.get_summary(user_id)
+    summary_answer = get_summary(pics, docs, summary)
+    button_start = types.KeyboardButton(text="start")
+    keyboard = types.ReplyKeyboardMarkup(keyboard=[[button_start]], resize_keyboard=True)
+
+    for answer in summary_answer:
+        await bot.send_media_group(GROUP_ID, answer)
+
+    await message.answer("Жми старт!", reply_markup=keyboard)
+
+
 @router.message(CarState.car_photo_8)
 async def car_photo_8(message: types.Message, state: FSMContext, db: Db):
     document_id = getattr(message.document, "file_id", None)
     photo_id = getattr(message.photo[-1], "file_id", None) if message.photo else None
     user_id = message.from_user.id
-    button_finish = types.KeyboardButton(text="Финиш")
+    button_finish = types.KeyboardButton(text=final)
     keyboard = types.ReplyKeyboardMarkup(keyboard=[[button_finish]], resize_keyboard=True)
     await db.add_document(user_id, document_id, photo_id)
     await message.answer(

@@ -54,6 +54,35 @@ class Db:
                 await con.execute(queries.insert_document, user_id, document_id, photo_id)
         config.log.info(f" добавлен документ user_id={user_id} document_id={document_id} photo_id={photo_id}")
 
+    async def get_documents(self, user_id: int) -> tuple[set, set]:
+        pics = set()
+        docs = set()
+        async with self.pool.acquire() as con:
+            async with con.transaction():
+                pics_and_docs = await con.fetch(queries.select_documents, user_id)
+
+                if pics_and_docs:
+                    pics.update(pics_and_docs[0][0])
+                    docs.update(pics_and_docs[0][1])
+
+                    if None in pics:
+                        pics.remove(None)
+
+                    if None in docs:
+                        docs.remove(None)
+
+        config.log.info(f" Для пользователя user_id={user_id} получено {len(docs)} документов и {len(pics)} фото")
+
+        return pics, docs
+
+    async def get_summary(self, user_id: int):
+        async with self.pool.acquire() as con:
+            async with con.transaction():
+                summary = await con.fetchrow(queries.select_summary, user_id)
+                config.log.info(f" Для пользователя user_id={user_id} получено {summary}")
+
+                return summary
+
 
 async def init_db() -> Db:
     db = Db()

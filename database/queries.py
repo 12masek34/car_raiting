@@ -40,3 +40,13 @@ insert_document = """
     photo_ids = array_append(photo_ids, $3)
     WHERE id = (SELECT id FROM cars WHERE user_id = $1 ORDER BY id DESC LIMIT 1)
 """
+
+select_documents = """
+    SELECT photo_ids, document_ids FROM cars
+    WHERE id = (SELECT id FROM cars WHERE user_id = $1 ORDER BY id DESC LIMIT 1)
+"""
+
+select_summary = """
+    SELECT restriction, number_of_keys, tire, drive_type FROM cars
+    WHERE id = (SELECT id FROM cars WHERE user_id = $1 ORDER BY id DESC LIMIT 1)
+"""
