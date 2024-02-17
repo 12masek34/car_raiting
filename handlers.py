@@ -57,8 +57,7 @@ async def finish(message: types.Message, state: FSMContext, db: Db, bot: Bot):
     pics, docs = await db.get_documents(user_id)
     summary = await db.get_summary(user_id)
     summary_answer = get_summary(pics, docs, summary)
-    button_start = types.KeyboardButton(text="start")
-    keyboard = types.ReplyKeyboardMarkup(keyboard=[[button_start]], resize_keyboard=True)
+    keyboard = get_keyboard("start")
 
     for answer in summary_answer:
         await bot.send_media_group(GROUP_ID, answer)
@@ -71,8 +70,7 @@ async def car_photo_8(message: types.Message, state: FSMContext, db: Db):
     document_id = getattr(message.document, "file_id", None)
     photo_id = getattr(message.photo[-1], "file_id", None) if message.photo else None
     user_id = message.from_user.id
-    button_finish = types.KeyboardButton(text=final)
-    keyboard = types.ReplyKeyboardMarkup(keyboard=[[button_finish]], resize_keyboard=True)
+    keyboard = get_keyboard(final)
     await db.add_document(user_id, document_id, photo_id)
     await message.answer(
         "Пофоткай очевидные повреждения/дефекты кузова/салона если такие есть.",
