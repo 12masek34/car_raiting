@@ -47,8 +47,9 @@ router = Router()
 async def cmd_start(message: types.Message, state: FSMContext, db: Db):
     user_id = message.from_user.id
     user_name = message.from_user.username
-    log.info(f" Пользователь user_id={user_id} user_name={user_name} стартует бота")
-    await db.add_car(user_id)
+    first_name = message.from_user.first_name
+    log.info(f" Пользователь user_id={user_id} user_name={first_name} user_login={user_name} стартует бота")
+    await db.add_car(user_id, user_name, first_name)
     keyboard = get_keyboard(*btn_yes_no)
     await message.answer("Есть ли текущий залог или ограничение на авто?", reply_markup=keyboard)
     await state.set_state(CarState.restriction)

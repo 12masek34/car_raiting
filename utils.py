@@ -31,14 +31,16 @@ def get_pictures(file_name: str) -> BufferedInputFile:
 
 
 def get_summary(pics: set, docs: set, summary: Record) -> list:
-    restriction = "*есть*" if summary["restriction"] else "нет"
+    restriction = "<b>есть</b>" if summary["restriction"] else "нет"
     keys = summary["number_of_keys"]
     tire = summary["tire"]
     drive_type = summary["drive_type"]
+    user_login = summary["user_login"]
+    user_name = summary["user_name"]
 
     caption = (
-        f"Принимайте лялю\!\n\nОграничения \- {restriction}\n"
-        f"Ключей \- {keys}\nШины \- {tire}\n Привод \- {drive_type}\n"
+        f"Принимайте лялю от {user_name} @{user_login}!\n\nОграничения - {restriction}\n"
+        f"Ключей - {keys}\nШины - {tire}\n Привод - {drive_type}\n"
     )
 
     files = []
@@ -50,7 +52,7 @@ def get_summary(pics: set, docs: set, summary: Record) -> list:
         first = None
 
     if first:
-        first = InputMediaPhoto(media=first, caption=caption, parse_mode=ParseMode.MARKDOWN_V2)
+        first = InputMediaPhoto(media=first, caption=caption, parse_mode=ParseMode.HTML)
         files.append(first)
         files.extend([InputMediaPhoto(media=pic) for pic in pics])
         files.extend([InputMediaDocument(media=doc) for doc in docs])

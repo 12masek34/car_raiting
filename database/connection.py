@@ -19,11 +19,13 @@ class Db:
         )
         config.log.info(" Есть коннект к базе")
 
-    async def add_car(self, user_id: int) -> None:
+    async def add_car(self, user_id: int | None, user_login: str | None, user_name: str | None) -> None:
         async with self.pool.acquire() as con:
             async with con.transaction():
-                id_ = await con.fetchval(queries.insert_car, user_id)
-                config.log.info(f" Создана запись user_id={user_id} id={id_}")
+                id_ = await con.fetchval(queries.insert_car, user_id, user_login, user_name)
+                config.log.info(
+                    f" Создана запись user_id={user_id} id={id_}, user_login={user_login}, user_name={user_name}"
+                )
 
     async def add_restriction(self, user_id: int, resriction: bool) -> None:
         async with self.pool.acquire() as con:

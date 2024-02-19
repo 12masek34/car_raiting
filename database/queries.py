@@ -2,6 +2,8 @@ create_cars = """
     CREATE TABLE IF NOT EXISTS cars (
         id BIGSERIAL PRIMARY KEY,
         user_id BIGINT,
+        user_login TEXT,
+        user_name TEXT,
         restriction BOOLEAN default null,
         number_of_keys INTEGER,
         tire VARCHAR(255),
@@ -12,7 +14,7 @@ create_cars = """
 """
 
 insert_car = """
-    INSERT INTO cars (user_id) values ($1) RETURNING id
+    INSERT INTO cars (user_id, user_login, user_name) values ($1, $2, $3) RETURNING id
 """
 
 insert_restriction = """
@@ -47,6 +49,6 @@ select_documents = """
 """
 
 select_summary = """
-    SELECT restriction, number_of_keys, tire, drive_type FROM cars
+    SELECT restriction, number_of_keys, tire, drive_type, user_login, user_name FROM cars
     WHERE id = (SELECT id FROM cars WHERE user_id = $1 ORDER BY id DESC LIMIT 1)
 """
