@@ -1,7 +1,7 @@
 create_cars = """
     CREATE TABLE IF NOT EXISTS cars (
         id BIGSERIAL PRIMARY KEY,
-        user_id INTEGER,
+        user_id BIGINT,
         restriction BOOLEAN default null,
         number_of_keys INTEGER,
         tire VARCHAR(255),
