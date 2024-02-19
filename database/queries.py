@@ -1,6 +1,6 @@
 create_cars = """
     CREATE TABLE IF NOT EXISTS cars (
-        id SERIAL PRIMARY KEY,
+        id BIGSERIAL PRIMARY KEY,
         user_id INTEGER,
         restriction BOOLEAN default null,
         number_of_keys INTEGER,
