@@ -37,9 +37,10 @@ def get_summary(pics: set, docs: set, summary: Record) -> list:
     drive_type = summary["drive_type"]
     user_login = summary["user_login"]
     user_name = summary["user_name"]
+    user_login = f"с ником @{user_login}" if user_login else "ник пользователя отсутствует"
 
     caption = (
-        f"Принимайте лялю от {user_name} @{user_login}!\n\nОграничения - {restriction}\n"
+        f"Принимайте лялю от {user_name} {user_login}!\n\nОграничения - {restriction}\n"
         f"Ключей - {keys}\nШины - {tire}\n Привод - {drive_type}\n"
     )
 
