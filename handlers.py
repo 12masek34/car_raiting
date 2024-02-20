@@ -13,6 +13,9 @@ from aiogram.filters import (
 from aiogram.fsm.context import (
     FSMContext,
 )
+from aiogram_media_group import (
+    media_group_handler,
+)
 
 from config import (
     GROUP_ID,
@@ -71,6 +74,25 @@ async def finish(message: types.Message, db: Db, bot: Bot):
     await message.answer("Жми старт!", reply_markup=keyboard)
 
 
+@router.message(CarState.car_photo_8, F.media_group_id, F.content_type.in_({"photo", "document"}))
+@media_group_handler
+async def car_photo_group_8(messages: list[types.Message], state: FSMContext, db: Db):
+    for message in messages:
+        document_id = getattr(message.document, "file_id", None)
+        photo_id = getattr(message.photo[-1], "file_id", None) if message.photo else None
+        user_id = message.from_user.id
+        user_name = message.from_user.username
+        log.info(f" Пользователь user_id={user_id} user_name={user_name} добавил 8 фото")
+        await db.add_document(user_id, document_id, photo_id)
+
+    keyboard = get_keyboard(final)
+    await messages[0].answer(
+        "Пофоткай очевидные повреждения/дефекты кузова/салона если такие есть.",
+        reply_markup=keyboard,
+    )
+    await state.set_state(CarState.car_photo_8)
+
+
 @router.message(CarState.car_photo_8)
 async def car_photo_8(message: types.Message, state: FSMContext, db: Db):
     document_id = getattr(message.document, "file_id", None)
@@ -84,6 +106,23 @@ async def car_photo_8(message: types.Message, state: FSMContext, db: Db):
         "Пофоткай очевидные повреждения/дефекты кузова/салона если такие есть.",
         reply_markup=keyboard,
     )
+    await state.set_state(CarState.car_photo_8)
+
+
+@router.message(CarState.car_photo_7, F.media_group_id, F.content_type.in_({"photo", "document"}))
+@media_group_handler
+async def car_photo_group_7(messages: list[types.Message], state: FSMContext, db: Db):
+    for message in messages:
+        document_id = getattr(message.document, "file_id", None)
+        photo_id = getattr(message.photo[-1], "file_id", None) if message.photo else None
+        user_id = message.from_user.id
+        user_name = message.from_user.username
+        log.info(f" Пользователь user_id={user_id} user_name={user_name} добавил 7 фото")
+        await db.add_document(user_id, document_id, photo_id)
+
+    photo_rear_seat = get_pictures("rear_seat.jpg")
+    await messages[0].answer_photo(photo_rear_seat)
+    await messages[0].answer(input_photo_phrase)
     await state.set_state(CarState.car_photo_8)
 
 
@@ -101,6 +140,23 @@ async def car_photo_7(message: types.Message, state: FSMContext, db: Db):
     await state.set_state(CarState.car_photo_8)
 
 
+@router.message(CarState.car_photo_6, F.media_group_id, F.content_type.in_({"photo", "document"}))
+@media_group_handler
+async def car_photo_group_6(messages: list[types.Message], state: FSMContext, db: Db):
+    for message in messages:
+        document_id = getattr(message.document, "file_id", None)
+        photo_id = getattr(message.photo[-1], "file_id", None) if message.photo else None
+        user_id = message.from_user.id
+        user_name = message.from_user.username
+        log.info(f" Пользователь user_id={user_id} user_name={user_name} добавил 6 фото")
+        await db.add_document(user_id, document_id, photo_id)
+
+    photo_front_seat = get_pictures("front_seat.jpg")
+    await messages[0].answer_photo(photo_front_seat)
+    await messages[0].answer(input_photo_phrase)
+    await state.set_state(CarState.car_photo_7)
+
+
 @router.message(CarState.car_photo_6)
 async def car_photo_6(message: types.Message, state: FSMContext, db: Db):
     document_id = getattr(message.document, "file_id", None)
@@ -113,6 +169,23 @@ async def car_photo_6(message: types.Message, state: FSMContext, db: Db):
     await message.answer_photo(photo_front_seat)
     await message.answer(input_photo_phrase)
     await state.set_state(CarState.car_photo_7)
+
+
+@router.message(CarState.car_photo_5, F.media_group_id, F.content_type.in_({"photo", "document"}))
+@media_group_handler
+async def car_photo_group_5(messages: list[types.Message], state: FSMContext, db: Db):
+    for message in messages:
+        document_id = getattr(message.document, "file_id", None)
+        photo_id = getattr(message.photo[-1], "file_id", None) if message.photo else None
+        user_id = message.from_user.id
+        user_name = message.from_user.username
+        log.info(f" Пользователь user_id={user_id} user_name={user_name} добавил 5 фото")
+        await db.add_document(user_id, document_id, photo_id)
+
+    photo_selector = get_pictures("selector.jpg")
+    await messages[0].answer_photo(photo_selector)
+    await messages[0].answer(input_photo_phrase)
+    await state.set_state(CarState.car_photo_6)
 
 
 @router.message(CarState.car_photo_5)
@@ -129,6 +202,23 @@ async def car_photo_5(message: types.Message, state: FSMContext, db: Db):
     await state.set_state(CarState.car_photo_6)
 
 
+@router.message(CarState.car_photo_4, F.media_group_id, F.content_type.in_({"photo", "document"}))
+@media_group_handler
+async def car_photo_group_4(messages: list[types.Message], state: FSMContext, db: Db):
+    for message in messages:
+        document_id = getattr(message.document, "file_id", None)
+        photo_id = getattr(message.photo[-1], "file_id", None) if message.photo else None
+        user_id = message.from_user.id
+        user_name = message.from_user.username
+        log.info(f" Пользователь user_id={user_id} user_name={user_name} добавил 4 фото")
+        await db.add_document(user_id, document_id, photo_id)
+
+    photo_panel = get_pictures("panel.jpg")
+    await messages[0].answer_photo(photo_panel)
+    await messages[0].answer(input_photo_phrase)
+    await state.set_state(CarState.car_photo_5)
+
+
 @router.message(CarState.car_photo_4)
 async def car_photo_4(message: types.Message, state: FSMContext, db: Db):
     document_id = getattr(message.document, "file_id", None)
@@ -141,6 +231,23 @@ async def car_photo_4(message: types.Message, state: FSMContext, db: Db):
     await message.answer_photo(photo_panel)
     await message.answer(input_photo_phrase)
     await state.set_state(CarState.car_photo_5)
+
+
+@router.message(CarState.car_photo_3, F.media_group_id, F.content_type.in_({"photo", "document"}))
+@media_group_handler
+async def car_photo_group_3(messages: list[types.Message], state: FSMContext, db: Db):
+    for message in messages:
+        document_id = getattr(message.document, "file_id", None)
+        photo_id = getattr(message.photo[-1], "file_id", None) if message.photo else None
+        user_id = message.from_user.id
+        user_name = message.from_user.username
+        log.info(f" Пользователь user_id={user_id} user_name={user_name} добавил 3 фото")
+        await db.add_document(user_id, document_id, photo_id)
+
+    photo_right = get_pictures("right.jpg")
+    await messages[0].answer_photo(photo_right)
+    await messages[0].answer(input_photo_phrase)
+    await state.set_state(CarState.car_photo_4)
 
 
 @router.message(CarState.car_photo_3)
@@ -157,6 +264,23 @@ async def car_photo_3(message: types.Message, state: FSMContext, db: Db):
     await state.set_state(CarState.car_photo_4)
 
 
+@router.message(CarState.car_photo_2, F.media_group_id, F.content_type.in_({"photo", "document"}))
+@media_group_handler
+async def car_photo_group_2(messages: list[types.Message], state: FSMContext, db: Db):
+    for message in messages:
+        document_id = getattr(message.document, "file_id", None)
+        photo_id = getattr(message.photo[-1], "file_id", None) if message.photo else None
+        user_id = message.from_user.id
+        user_name = message.from_user.username
+        log.info(f" Пользователь user_id={user_id} user_name={user_name} добавил 2 фото")
+        await db.add_document(user_id, document_id, photo_id)
+
+    photo_rear = get_pictures("rear.jpg")
+    await messages[0].answer_photo(photo_rear)
+    await messages[0].answer(input_photo_phrase)
+    await state.set_state(CarState.car_photo_3)
+
+
 @router.message(CarState.car_photo_2)
 async def car_photo_2(message: types.Message, state: FSMContext, db: Db):
     document_id = getattr(message.document, "file_id", None)
@@ -171,6 +295,24 @@ async def car_photo_2(message: types.Message, state: FSMContext, db: Db):
     await state.set_state(CarState.car_photo_3)
 
 
+
+@router.message(CarState.car_photo_1, F.media_group_id, F.content_type.in_({"photo", "document"}))
+@media_group_handler
+async def car_photo_group_1(messages: list[types.Message], state: FSMContext, db: Db):
+    for message in messages:
+        document_id = getattr(message.document, "file_id", None)
+        photo_id = getattr(message.photo[-1], "file_id", None) if message.photo else None
+        user_id = message.from_user.id
+        user_name = message.from_user.username
+        log.info(f" Пользователь user_id={user_id} user_name={user_name} добавил 1 фото")
+        await db.add_document(user_id, document_id, photo_id)
+
+    photo_front = get_pictures("left.jpg")
+    await messages[0].answer_photo(photo_front)
+    await messages[0].answer(input_photo_phrase)
+    await state.set_state(CarState.car_photo_2)
+
+
 @router.message(CarState.car_photo_1)
 async def car_photo_1(message: types.Message, state: FSMContext, db: Db):
     document_id = getattr(message.document, "file_id", None)
@@ -183,6 +325,24 @@ async def car_photo_1(message: types.Message, state: FSMContext, db: Db):
     await message.answer_photo(photo_front)
     await message.answer(input_photo_phrase)
     await state.set_state(CarState.car_photo_2)
+
+
+@router.message(CarState.document_photo, F.media_group_id, F.content_type.in_({"photo", "document"}))
+@media_group_handler
+async def document_group(messages: list[types.Message], state: FSMContext, db: Db):
+    for message in messages:
+
+        document_id = getattr(message.document, "file_id", None)
+        photo_id = getattr(message.photo[-1], "file_id", None) if message.photo else None
+        user_id = message.from_user.id
+        user_name = message.from_user.username
+        log.info(f" Пользователь user_id={user_id} user_name={user_name} добвил фото документов")
+        await db.add_document(user_id, document_id, photo_id)
+
+    photo_front = get_pictures("front.jpg")
+    await messages[0].answer_photo(photo_front)
+    await messages[0].answer(input_photo_phrase)
+    await state.set_state(CarState.car_photo_1)
 
 
 @router.message(CarState.document_photo)
