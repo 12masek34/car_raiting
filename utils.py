@@ -47,16 +47,16 @@ def get_summary(pics: set, docs: set, summary: Record) -> list:
     files = []
     if pics:
         first = pics.pop()
+        first = InputMediaPhoto(media=first, caption=caption, parse_mode=ParseMode.HTML)
     elif docs:
         first = docs.pop()
+        first = InputMediaDocument(media=first, caption=caption, parse_mode=ParseMode.HTML)
     else:
         first = None
 
-    if first:
-        first = InputMediaPhoto(media=first, caption=caption, parse_mode=ParseMode.HTML)
-        files.append(first)
-        files.extend([InputMediaPhoto(media=pic) for pic in pics])
-        files.extend([InputMediaDocument(media=doc) for doc in docs])
+    files.append(first)
+    files.extend([InputMediaPhoto(media=pic) for pic in pics])
+    files.extend([InputMediaDocument(media=doc) for doc in docs])
 
     if files:
         files = chunk_list(files, 9)
